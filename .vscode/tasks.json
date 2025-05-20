@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "cmake -S ${workspaceFolder} -B build/${input:build_type} -DCMAKE_BUILD_TYPE=${input:build_type} && cmake --build build/${input:build_type} -j8 --config ${input:build_type}",
+            "group": "build"
+        },
+        {
+            "label": "bimini-test",
+            "type": "process",
+            "command": "${workspaceFolder}/build/${input:build_type}/bimini-test",
+            "group": "build"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "build_type",
+            "type": "pickString",
+            "description": "Select the build type:",
+            "options": [ "Release", "Debug"],
+        }
+    ]
+}

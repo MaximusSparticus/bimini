@@ -1,0 +1,20 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Add dependencies that must be found for bimini to work
+# Uncomment and adapt as needed for your project's dependencies
+# find_dependency(SomeLibrary)
+
+# Import the targets
+include("${CMAKE_CURRENT_LIST_DIR}/biminiTargets.cmake")
+
+# Define any variables that users might need
+set(BIMINI_INCLUDE_DIRS "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
+set(BIMINI_LIBRARIES bimini::bimini)
+
+# Optional dependency on ifcplusplus - this might be needed by users of your library
+# Uncomment if users need this dependency information
+# find_dependency(IfcPlusPlus)
+
+check_required_components(bimini)
