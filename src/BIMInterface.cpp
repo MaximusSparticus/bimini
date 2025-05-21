@@ -45,12 +45,20 @@ void BIMInterface::dumpEntities() const {
     const auto &entities = m_model->getMapIfcEntities();
 
     for (const auto &pair : entities) {
-        //std::ostringstream ss;
-        //ss << "Entity ID" << pair.first << std::endl;
-        std::cout << std::format("Entity ID: {}\tClass ID: {}\tClass Name: {}\n",
+        std::cout << std::format("Entity ID: {}\tClass ID: {}\tClass Name: {}\t",
             pair.first, pair.second->classID(), IFC4X3::EntityFactory::getStringForClassID(pair.second->classID()));
-    }
 
+        std::vector<std::pair<std::string, std::shared_ptr<BuildingObject>>> attributes;
+        pair.second->getAttributes(attributes);
+        for (const auto& attribute : attributes) {
+            if (attribute.second) {
+                std::cout << std::format("\t{} ({})\t", attribute.first, attribute.second->classID());
+            } else {
+                std::cout << std::format("\t{}\t", attribute.first);
+            }
+        }
+        std::cout << "\n";
+    }
 }
 
 }   // namespace bimini

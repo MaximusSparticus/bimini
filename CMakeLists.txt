@@ -15,6 +15,17 @@
 cmake_minimum_required(VERSION 3.16)
 project(bimini VERSION 0.1.0 LANGUAGES CXX)
 
+# Add options
+option(BIMINI_BUILD_TESTS "Build the bimini test suite" ON)
+option(BIMINI_BUILD_DOCS "Build documentation" OFF)
+
+# Check if building within a ROS environment
+if(DEFINED ENV{AMENT_PREFIX_PATH})
+  set(BUILDING_WITH_ROS TRUE)
+else()
+  set(BUILDING_WITH_ROS FALSE)
+endif()
+
 # Set C++20 standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,42 +38,37 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
 endif()
 
-# Add options
-option(BIMINI_BUILD_TESTS "Build the bimini test suite" ON)
-option(BIMINI_BUILD_DOCS "Build documentation" OFF)
-
 # Include directories
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Library source files
-file(GLOB_RECURSE BIMINI_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/bimini/*.cpp
+set(BIMINI_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/BIMInterface.cpp
 )
 
 # Library header files
 file(GLOB_RECURSE BIMINI_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/bimini/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/bimini/*.hpp
 )
 
 # Create the library
-add_library(bimini ${BIMINI_SOURCES} ${BIMINI_HEADERS})
+add_library(${PROJECT_NAME} ${BIMINI_SOURCES} ${BIMINI_HEADERS})
 target_include_directories(bimini
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/ifcpp/IFC4X3/include
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/include
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/include
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/common
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/build/src
-	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/ifcpp/IFC4X3/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/common
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/build/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
 )
 
 # Handle IfcPlusPlus dependency and silence warnings
@@ -133,6 +139,41 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/biminiConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bimini
 )
+
+# Build ROS node if applicable
+if(BUILDING_WITH_ROS)
+    find_package(ament_cmake REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(std_msgs REQUIRED)
+  
+    # Include ROS-specific directories
+    include_directories(
+        include
+        ${rclcpp_INCLUDE_DIRS}
+        ${std_msgs_INCLUDE_DIRS}
+    )
+  
+    # Create your library or executable
+    add_executable(${PROJECT_NAME}_node
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+    )
+    ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs)
+  
+    # Install targets
+    install(TARGETS ${PROJECT_NAME}_node
+        DESTINATION lib/${PROJECT_NAME}
+    )
+  
+    # Install include directories, launch files, etc.
+    install(DIRECTORY include/ DESTINATION include)
+  
+    # Export dependencies
+    ament_export_dependencies(rclcpp std_msgs)
+    ament_export_include_directories(include)
+  
+    # Package configuration
+    ament_package()
+endif()
 
 # Testing
 if(BIMINI_BUILD_TESTS)
