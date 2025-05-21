@@ -145,19 +145,44 @@ if(BUILDING_WITH_ROS)
     find_package(ament_cmake REQUIRED)
     find_package(rclcpp REQUIRED)
     find_package(std_msgs REQUIRED)
+    find_package(geometry_msgs REQUIRED)
+    find_package(bimini_msgs REQUIRED)
   
     # Include ROS-specific directories
     include_directories(
         include
         ${rclcpp_INCLUDE_DIRS}
         ${std_msgs_INCLUDE_DIRS}
+        ${geometry_msgs_INCLUDE_DIRS}
+        ${bimini_msgs_INCLUDE_DIRS}
+    )
+  
+    # Create your library or executable
+    add_executable(${PROJECT_NAME}_client
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp
+    )
+    ament_target_dependencies(${PROJECT_NAME}_client
+        rclcpp
+        std_msgs
+        geometry_msgs
+        bimini_msgs
+    )
+  
+    # Install targets
+    install(TARGETS ${PROJECT_NAME}_client
+        DESTINATION lib/${PROJECT_NAME}
     )
   
     # Create your library or executable
     add_executable(${PROJECT_NAME}_node
         ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     )
-    ament_target_dependencies(${PROJECT_NAME}_node rclcpp std_msgs)
+    ament_target_dependencies(${PROJECT_NAME}_node
+        rclcpp
+        std_msgs
+        geometry_msgs
+        bimini_msgs
+    )
   
     # Install targets
     install(TARGETS ${PROJECT_NAME}_node
@@ -168,7 +193,12 @@ if(BUILDING_WITH_ROS)
     install(DIRECTORY include/ DESTINATION include)
   
     # Export dependencies
-    ament_export_dependencies(rclcpp std_msgs)
+    ament_export_dependencies(
+        rclcpp
+        std_msgs
+        geometry_msgs
+        bimini_msgs
+    )
     ament_export_include_directories(include)
   
     # Package configuration
