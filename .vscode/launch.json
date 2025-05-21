@@ -13,7 +13,7 @@
                 "--gtest_filter=${input:gtest_filter}"
             ],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/build/Debug",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",

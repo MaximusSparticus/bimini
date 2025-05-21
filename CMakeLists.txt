@@ -53,6 +53,16 @@ target_include_directories(bimini
         $<INSTALL_INTERFACE:include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/ifcpp/IFC4X3/include
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/include
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/include
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/src/common
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/Carve/build/src
+	    ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/IfcPlusPlus/src/external/glm
 )
 
 # Handle IfcPlusPlus dependency and silence warnings
@@ -66,6 +76,9 @@ endif()
 # Force IfcPlusPlus options to be OFF
 set(BUILD_CONSOLE_APPLICATION OFF CACHE BOOL "Build console application" FORCE)
 set(BUILD_VIEWER_APPLICATION OFF CACHE BOOL "Build viewer application" FORCE)
+ADD_DEFINITIONS(-DUNICODE)
+ADD_DEFINITIONS(-D_UNICODE)
+ADD_DEFINITIONS(-DIFCQUERY_STATIC_LIB)
 
 # Add submodule with build configuration
 add_subdirectory(deps/ifcplusplus)
@@ -141,7 +154,16 @@ if(BIMINI_BUILD_TESTS)
             GTest::gtest_main
             GTest::gmock
     )
-    
+
+    # Copy example IFC file to the test binary directory
+    add_custom_command(
+        TARGET bimini-test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/deps/ifcplusplus/examples/LoadFileExample/example.ifc
+        $<TARGET_FILE_DIR:bimini-test>/test/test.ifc
+        COMMENT "Copying example.ifc to test binary directory"
+    )
+
     # Add tests to be run by CTest
     add_test(NAME bimini-test COMMAND bimini-test)
 endif()

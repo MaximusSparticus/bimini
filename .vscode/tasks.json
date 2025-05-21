@@ -13,7 +13,10 @@
             "label": "bimini-test",
             "type": "process",
             "command": "${workspaceFolder}/build/${input:build_type}/bimini-test",
-            "group": "build"
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/build/${input:build_type}/"
+            }
         }
     ],
     "inputs": [
