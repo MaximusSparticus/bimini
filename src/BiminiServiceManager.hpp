@@ -8,6 +8,7 @@
 #include "bimini/BIMInterface.hpp"
 #include "bimini_msgs/msg/building_model.hpp"
 #include "bimini_msgs/srv/load_building.hpp"
+#include "Logger.hpp"
 
 /**
  * @brief Manages all service-related functionality
@@ -29,8 +30,12 @@ class BiminiServiceManager {
 
     std::string generateUniqueId() const;
 
+    // Shared Resources
     rclcpp::Node::SharedPtr m_node;
     std::unordered_map<std::string, std::shared_ptr<bimini::BIMInterface>>& m_buildings;
+
+    // Utilities
+    Logger m_logger;
 
     // Services
     rclcpp::Service<bimini_msgs::srv::LoadBuilding>::SharedPtr m_loadBuildingService;

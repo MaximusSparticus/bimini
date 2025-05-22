@@ -180,6 +180,7 @@ if(BUILDING_WITH_ROS)
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiServiceManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiPublisherManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiSubscriberManager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Logger.cpp
     )
     target_link_libraries(bimini_node bimini)
 
