@@ -176,6 +176,10 @@ if(BUILDING_WITH_ROS)
     # Create your library or executable
     add_executable(${PROJECT_NAME}_node
         ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiNode.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiServiceManager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiPublisherManager.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiSubscriberManager.cpp
     )
     ament_target_dependencies(${PROJECT_NAME}_node
         rclcpp
