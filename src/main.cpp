@@ -7,6 +7,7 @@ int main(int argc, char * argv[]) {
   
     // Create and spin the node
     auto node = std::make_shared<BiminiNode>();
+    node->initialize();
   
     // Process callbacks until the user manually kills the process
     rclcpp::spin(node);

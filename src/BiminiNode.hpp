@@ -27,7 +27,7 @@ struct BiminiNodeConfig {
 class BiminiNode : public rclcpp::Node {
  public:
     // Default constructor
-    explicit BiminiNode(const BiminiNodeConfig& config = {});
+    explicit BiminiNode();
 
     // Delete copy and move constructors
     BiminiNode(const BiminiNode&) = delete;
@@ -37,6 +37,9 @@ class BiminiNode : public rclcpp::Node {
 
     // Default destructor defined in source due to forward declarations
     ~BiminiNode();
+
+    // Initialize the node before running it. This is necesssary because of the shared from this call
+    void initialize(const BiminiNodeConfig& config = {});
 
  private:
     std::unique_ptr<BiminiServiceManager> m_serviceManager;
