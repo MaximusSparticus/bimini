@@ -14,13 +14,20 @@ class BiminiServiceManager;
 class BiminiPublisherManager;
 class BiminiSubscriberManager;
 
+struct BiminiNodeConfig {
+    std::chrono::milliseconds publishInterval{1000};
+    bool enablePeriodicPublishing{true};
+    std::string defaultFrameId{"world"};
+    size_t maxConcurrentBuildings{10};
+};
+
 /**
  * @brief Main BiminiNode class - acts as coordinator between components
  */
 class BiminiNode : public rclcpp::Node {
  public:
     // Default constructor
-    BiminiNode();
+    explicit BiminiNode(const BiminiNodeConfig& config = {});
 
     // Delete copy and move constructors
     BiminiNode(const BiminiNode&) = delete;

@@ -18,12 +18,8 @@ BiminiPublisherManager::BiminiPublisherManager(
 , m_logger(m_node, "PublisherManager")
 , m_buildingModelPublisher()
 , m_timer() {
-    using namespace std::chrono_literals;
     // Initialize publishers
     m_buildingModelPublisher = m_node->create_publisher<bimini_msgs::msg::BuildingModel>("building_model", 10);
-    
-    // Initialize timers for the various publishing loop rates
-    m_timer = m_node->create_wall_timer(1s, std::bind(&BiminiPublisherManager::publish, this));
 }
 
 void BiminiPublisherManager::startPublishing(std::chrono::milliseconds interval) {
