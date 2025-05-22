@@ -23,3 +23,5 @@ BiminiNode::BiminiNode()
 , m_buildings() {
     RCLCPP_INFO(this->get_logger(), "BiminiNode initialized");
 }
+
+BiminiNode::~BiminiNode() = default;

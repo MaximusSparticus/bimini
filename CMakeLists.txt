@@ -52,7 +52,7 @@ file(GLOB_RECURSE BIMINI_HEADERS
 )
 
 # Create the library
-add_library(${PROJECT_NAME} ${BIMINI_SOURCES} ${BIMINI_HEADERS})
+add_library(bimini ${BIMINI_SOURCES} ${BIMINI_HEADERS})
 target_include_directories(bimini
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -158,10 +158,10 @@ if(BUILDING_WITH_ROS)
     )
   
     # Create your library or executable
-    add_executable(${PROJECT_NAME}_client
+    add_executable(bimini_client
         ${CMAKE_CURRENT_SOURCE_DIR}/src/client.cpp
     )
-    ament_target_dependencies(${PROJECT_NAME}_client
+    ament_target_dependencies(bimini_client
         rclcpp
         std_msgs
         geometry_msgs
@@ -169,19 +169,21 @@ if(BUILDING_WITH_ROS)
     )
   
     # Install targets
-    install(TARGETS ${PROJECT_NAME}_client
+    install(TARGETS bimini_client
         DESTINATION lib/${PROJECT_NAME}
     )
   
     # Create your library or executable
-    add_executable(${PROJECT_NAME}_node
+    add_executable(bimini_node
         ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiNode.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiServiceManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiPublisherManager.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/BiminiSubscriberManager.cpp
     )
-    ament_target_dependencies(${PROJECT_NAME}_node
+    target_link_libraries(bimini_node bimini)
+
+    ament_target_dependencies(bimini_node
         rclcpp
         std_msgs
         geometry_msgs
@@ -189,7 +191,7 @@ if(BUILDING_WITH_ROS)
     )
   
     # Install targets
-    install(TARGETS ${PROJECT_NAME}_node
+    install(TARGETS bimini_node
         DESTINATION lib/${PROJECT_NAME}
     )
   
@@ -204,7 +206,11 @@ if(BUILDING_WITH_ROS)
         bimini_msgs
     )
     ament_export_include_directories(include)
-  
+ 
+    # Export bimini library for other ROS packages to use
+    ament_export_libraries(bimini)
+    ament_export_targets(biminiTargets HAS_LIBRARY_TARGET)
+
     # Package configuration
     ament_package()
 endif()

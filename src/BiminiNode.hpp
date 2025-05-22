@@ -19,8 +19,17 @@ class BiminiSubscriberManager;
  */
 class BiminiNode : public rclcpp::Node {
  public:
+    // Default constructor
     BiminiNode();
-    ~BiminiNode() = default;
+
+    // Delete copy and move constructors
+    BiminiNode(const BiminiNode&) = delete;
+    BiminiNode& operator=(const BiminiNode&) = delete;
+    BiminiNode(BiminiNode&&) = delete;
+    BiminiNode& operator=(BiminiNode&&) = delete;
+
+    // Default destructor defined in source due to forward declarations
+    ~BiminiNode();
 
  private:
     std::unique_ptr<BiminiServiceManager> m_serviceManager;
