@@ -147,6 +147,11 @@ if(BUILDING_WITH_ROS)
     find_package(std_msgs REQUIRED)
     find_package(geometry_msgs REQUIRED)
     find_package(bimini_msgs REQUIRED)
+
+    install(
+        PROGRAMS scripts/ifc_construction_site_generator.py
+        DESTINATION lib/${PROJECT_NAME}
+    )
   
     # Include ROS-specific directories
     include_directories(
@@ -195,9 +200,28 @@ if(BUILDING_WITH_ROS)
     install(TARGETS bimini_node
         DESTINATION lib/${PROJECT_NAME}
     )
+
+    # IFC to Gazebo Converter
+    add_executable(ifc_to_gazebo_converter
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/IFCToGazeboConverter.cpp
+    )
+    target_link_libraries(ifc_to_gazebo_converter bimini)
+    ament_target_dependencies(ifc_to_gazebo_converter
+        rclcpp
+        bimini_msgs
+    )
+    # Install targets
+    install(TARGETS ifc_to_gazebo_converter
+        DESTINATION lib/${PROJECT_NAME}
+    )
   
     # Install include directories, launch files, etc.
     install(DIRECTORY include/ DESTINATION include)
+
+    install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch)
+    install(DIRECTORY worlds/ DESTINATION share/${PROJECT_NAME}/worlds)
+    install(DIRECTORY data/ DESTINATION share/${PROJECT_NAME}/data)
+    install(DIRECTORY docs/ DESTINATION share/${PROJECT_NAME}/docs)
   
     # Export dependencies
     ament_export_dependencies(
